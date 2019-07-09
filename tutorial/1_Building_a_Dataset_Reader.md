@@ -8,7 +8,23 @@
 
 ### 1.2.1 CoNLL'03
 
-### 1.2.2
+### 1.2.2 Downloading
+
+I've prepared a [download script](https://github.com/jbarrow/allennlp_tutorial/blob/master/data/download.sh) in the repository for downloading the data.
+To use it, create a directory called `data` and copy the contents of the `download.sh` script into a `download.sh` file in that directory:
+
+```
+mkdir data
+cd data
+```
+
+Then, just run the script:
+
+```
+bash download.sh
+```
+
+It should generate 3 files: `train.txt`, `validation.txt`, and `test.txt`.
 
 ## 1.3 Dataset Reader
 
