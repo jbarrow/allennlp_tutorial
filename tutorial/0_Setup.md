@@ -24,7 +24,7 @@ That's certainly a tall order for a single tutorial, but thankfully most of that
 How do I plan on doing that?
 Well, there's **a mantra I want you to follow** when using AllenNLP to do NLP research:
 
-- *First, __think about the problem__. Second, __read the data__. Third, __build the baselines__. Then __iterate__.*
+> *First, __think about the problem__. Second, __read the data__. Third, __build the baselines__. Then __iterate__.*
 
 That's the whole tutorial in a nutshell.
 You'll note that the tutorial structure mirrors the mantra, and it's a reasonable way to approach most NLP research.
