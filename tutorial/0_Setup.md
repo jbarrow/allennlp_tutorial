@@ -171,6 +171,20 @@ cd allennlp_tutorial
 You're all set up and ready to start learning how to use AllenNLP to do NLP research!
 Or, at least, the ever-expanding subset of NLP research that uses deep learning!
 
+### 0.3.5 Debugging
+
+**I'm on a Mac and `allennlp` won't install. I'm getting errors about something called `jsonnet`.**
+
+When using Mac OS X for development, it's often necessary to install Xcode's developer tools.
+To do that, you'll have to run 2 commands:
+
+```
+xcode-select --install
+open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
+```
+
+After you have run those and followed the prompts, please re-attempt to `pip install allennlp`.
+
 ## 0.4 Feedback
 
 I highly recommend submitting feedback on this tutorial once you've gone through it!

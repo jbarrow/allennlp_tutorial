@@ -9,7 +9,7 @@ It consists of 8 sections, and I recommend you do them in order:
 3. [Configuring Experiments](https://github.com/jbarrow/allennlp_tutorial/blob/master/tutorial/3_Configuring_Experiments.md) [WIP]
 4. [CRF Decoding](https://github.com/jbarrow/allennlp_tutorial/blob/master/tutorial/4_CRF_Decoding.md) [WIP]
 5. [Hierarchical LSTMs](https://github.com/jbarrow/allennlp_tutorial/blob/master/tutorial/5_Hierarchical_LSTMs.md) [WIP]
-6. [Tackling Your Own Experiments](https://github.com/jbarrow/allennlp_tutorial/blob/master/tutorial/6_Tackling_Your_Own_Experiments.md) [WIP]
+6. [Tackling Your Own Experiments](https://github.com/jbarrow/allennlp_tutorial/blob/master/tutorial/6_Tackling_Your_Own_Experiments.md)
 7. [Predictors](https://github.com/jbarrow/allennlp_tutorial/blob/master/tutorial/7_Predictors.md) [WIP]
 
 The tutorial makes no assumptions about familiarity with AllenNLP, and goes through using it as an experimental platform, using JSON configurations.
