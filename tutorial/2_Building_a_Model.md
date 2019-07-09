@@ -9,5 +9,3 @@
 ## 2.2 Sequence-to-Sequence Encoders
 
 ## 2.3 Metrics
-
-## 2.4 A Full Dry Run
