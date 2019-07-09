@@ -24,12 +24,35 @@ That's certainly a tall order for a single tutorial, but thankfully most of that
 How do I plan on doing that?
 Well, there's **a mantra I want you to follow** when using AllenNLP to do NLP research:
 
-*First, __think about the problem__. Second, __read the data__. Third, __build the baselines__. Then __iterate__.*
+- *First, __think about the problem__. Second, __read the data__. Third, __build the baselines__. Then __iterate__.*
 
 That's the whole tutorial in a nutshell.
 You'll note that the tutorial structure mirrors the mantra, and it's a reasonable way to approach most NLP research.
 
-### 0.2.1 But First, a Caveat
+### 0.2.1 The Problem
+
+Specifically, we'll be focusing on how to do **named-entity recognition**.
+I'll go into more detail about how we're going to approach this in the next section.
+But it might be worthwhile to provide a motivating example here.
+Say you have the sentence:
+
+```
+Bill Gates and Paul Allen, founders of Microsoft, started selling software in 1975 in New Mexico.
+```
+
+There are questions you may want to ask in order to understand the sentence:
+
+- **who** was mentioned in the sentence? (Answer: `Bill Gates` and `Paul Allen`)
+- **what organizations** were mentioned? (Answer: `Microsoft`)
+- **what locations** were mentioned? (Answer: `New Mexico`)
+- **what dates** were mentioned? (Answer: `1975`)
+
+You could think of this as a segmentation problem: you want to segment the sentence into spans mentioning an entity, and spans not mentioning entities.
+The approach that we'll take, however, attempts to tag each token in the sentence.
+We'll go into more about how and why in `Section 1`.
+It constitutes the first part of the mantra: **think about the problem**.
+
+### 0.2.2 But First, a Caveat
 
 This is a very opinionated tutorial.
 When writing it, I made many (conscious and unconscious) decisions about what to focus on and what to eschew.
@@ -45,7 +68,7 @@ The code in this repository is already complete; it's what you'll end up with, s
 However, you get the most out of any tutorial if you do the leg-work yourself.
 I strongly recommend rewriting all the code yourself, **without copy/pasting**.
 
-### 0.2.2 What Should I Already Know?
+### 0.2.3 What Should I Already Know?
 
 Pretty much all of this tutorial requires use of the **Unix command line**, so I'm assuming you have access to one (either Mac OS X, a Linux installation, or a virtual machine), or know how to translate these commands to their Windows equivalents.
 I'm also assuming you are reasonably familiar (maybe even comfortable) with **Python**, and have a high-level **understanding of what PyTorch is** and how to use it.
