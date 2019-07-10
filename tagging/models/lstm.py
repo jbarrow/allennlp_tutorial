@@ -9,10 +9,10 @@ from allennlp.modules.time_distributed import TimeDistributed
 from allennlp.modules.text_field_embedders import TextFieldEmbedder
 from allennlp.nn.util import get_text_field_mask, sequence_cross_entropy_with_logits
 from allennlp.modules.seq2seq_encoders.seq2seq_encoder import Seq2SeqEncoder
-from allennlp.training.metrics import F1Measure, CategoricalAccuracy
+from allennlp.training.metrics import CategoricalAccuracy
 
 from typing import Optional, Dict, Any
-from statistics import mean
+
 
 @Model.register('ner_lstm')
 class NerLstm(Model):
