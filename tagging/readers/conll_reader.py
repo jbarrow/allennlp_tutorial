@@ -2,7 +2,7 @@ from typing import Dict, List
 from overrides import overrides
 
 from allennlp.data.dataset_readers.dataset_reader import DatasetReader
-from allennlp.data.fields import Field, TextField, SequenceLabelField, MetadataField
+from allennlp.data.fields import Field, TextField, SequenceLabelField
 from allennlp.data.instance import Instance
 from allennlp.data.token_indexers import SingleIdTokenIndexer, TokenIndexer
 from allennlp.data.tokenizers import Token
@@ -21,7 +21,7 @@ class CoNLL03DatasetReader(DatasetReader):
         self._token_indexers = token_indexers or {'tokens': SingleIdTokenIndexer()}
 
     @overrides
-    def _read(self, file_path: str):
+    def _read(self, file_path: str) -> Iterator[Instance]:
         with open(file_path, 'r') as conll_file:
             # itertools.groupby is a powerful function that can group
             # successive items in a list by the returned function call.

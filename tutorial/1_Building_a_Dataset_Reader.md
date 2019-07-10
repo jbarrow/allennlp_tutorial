@@ -207,7 +207,10 @@ Any argument in `__init__()` will be visible to the JSON configuration later on,
 For our CoNLL'03 reader, our `__init__()` function will take in 2 parameters: `token_indexers`, and `lazy`.
 
 ```
-from typing import Dict
+from allennlp.data.dataset_readers.dataset_reader import DatasetReader
+from allennlp.data.token_indexers import SingleIdTokenIndexer, TokenIndexer
+
+from typing import Dict, List, Iterator
 
 ...
 
@@ -218,11 +221,27 @@ from typing import Dict
         self._token_indexers = token_indexers or {'tokens': SingleIdTokenIndexer()}
 ```
 
-The token indexers will tell Allen
+The token indexers will help AllenNLP map tokens to integers to keep track of them in the future, and the `lazy` flag is required for anything that inherits from `DatasetReader`.
+If `lazy=True`, the AllenNLP won't store the dataset in memory, but will load it from disk in batch-size chunks.
+This is desirable if your dataset is too large to fit in memory, but for our purposes we'll stick with it being false.
+
+The next thing we need to define is the `_read()` function.
+The `_read()` function only takes in a `file_path: str` argument in pretty much every case.
+The purpose of this function is to take a *single file* which contains the dataset and convert it to a list of `Instance`s.
+For now, don't worry about what an `Instance` is, because we'll assume we have access to a function called `text_to_instance`, which takes in each example and converts it to an `Instance`.
+
+Put the code below into your `conll_reader` file:
 
 ```
+from allennlp.data.instance import Instance
+from overrides import overrides
+
+import itertools
+
+...
+
     @overrides
-    def _read(self, file_path: str):
+    def _read(self, file_path: str) -> Iterator[Instance]:
         is_divider = lambda line: line.strip() == ''
         with open(file_path, 'r') as conll_file:
             for divider, lines in itertools.groupby(conll_file, is_divider):
@@ -236,10 +255,29 @@ The token indexers will tell Allen
                     yield self.text_to_instance(tokens, ner_tags)
 ```
 
-itertools.groupby is a powerful function that can group successive items in a list by the returned function call.
-In this case, we're calling it with `is_divider`, which returns True if it's a blank line and False otherwise.
+This code does the following:
+
+1. Open the given dataset path
+2. Split it into contiguous lines of text and blank lines using `itertools.groupby`.
+  `itertools.groupby` is a powerful function that can group successive items in a list by the returned function call.
+  In this case, we're calling it with `is_divider`, which returns True if it's a blank line and False otherwise.
+3. For every chunk of text that isn't a blank line (a divider, in this case) get the tokens and the NER tags.
+4. Pass the list of tokens and list of NER tags to a function called `text_to_instance`, and yield the `Instance` it returns.
+
+This will be pretty standard for any AllenNLP dataset reader you write.
+You can consume a CSV file, JSON-lines file, XML file, CoNLL file, etc., but the general structure will be:
+
+- read in each example into tokens and labels (and whatever other data you care about)
+- pass that data off to the `text_to_instance` function, and yield whatever it returns.
+
+However, we've put a lot on the `text_to_instance` function without describing its purpose, so let's write our own now:
 
 ```
+from allennlp.data.tokenizers import Token
+from allennlp.data.fields import Field, TextField, SequenceLabelField
+
+...
+
     @overrides
     def text_to_instance(self,
                          words: List[str],
@@ -255,6 +293,25 @@ In this case, we're calling it with `is_divider`, which returns True if it's a b
 
         return Instance(fields)
 ```
+
+The most important thing to take away from the above code is that you're wrapping everything in a named `Field` of some type.
+
+- A `TextField` stores text (as a list of `Token` objects).
+- A `LabelField` stores a single label.
+- A `SequenceLabelField` stores a sequential label (as in this case), and should also be given the sequential field it's tied to (in this case, the tokens)
+- An `ArrayField` stores a numpy array.
+- A `MetadataField` stores data that you don't want to be transformed.
+- and so on.
+
+Once you've wrapped your data in the appropriate kind of `Field`, you give that field a name, as a dictionary key.
+In the above code, we've named the tokens `tokens`, and the tags `label`, though you could name them anything you want.
+These names are what will be passed to your model later on, so remember that this is where they're documented in the code.
+
+At the end, we return an `Instance`, which is just made up of the dictionary mapping field names to fields.
+And that's it!
+We've written our dataset reader which consumes a CoNLL file and parses it into a model-readable form!
+
+The next step is to test that we've done everything correctly.
 
 ## 1.4 Testing the Dataset Reader
 
@@ -311,3 +368,5 @@ allennlp dry-run --include-package tagging -s /tmp/tagging/tests/0 configs/test_
 - **`configs/test_reader.jsonnet`**
 - **`--include-package`**
 - **`-s`**:
+
+## 1.5 A General Note on Documentation
