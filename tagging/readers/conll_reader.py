@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, List
+from typing import Dict, List
 from overrides import overrides
 
 from allennlp.data.dataset_readers.dataset_reader import DatasetReader

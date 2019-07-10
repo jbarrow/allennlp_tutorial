@@ -124,10 +124,10 @@ Currently, you should have directories that look something like this:
 allennlp_tutorial/
   |- tagging/
   |- data/
-     |- download.sh
-     |- train.txt
-     |- test.txt
-     |- validation.txt
+    |- download.sh
+    |- train.txt
+    |- test.txt
+    |- validation.txt
 ```
 
 In this case, `tagging` is the name of the Python package we'll be creating.
@@ -137,6 +137,7 @@ We'll start by creating a folder to hold our dataset readers by running the foll
 mkdir tagging/readers
 touch tagging/__init__.py
 touch tagging/readers/__init__.py
+touch tagging/readers/conll_reader.py
 ```
 
 These commands do 2 things:
@@ -149,9 +150,10 @@ So now your directories should look something like this:
 ```
 allennlp_tutorial/
   |- tagging/
-     |- readers/
-        |- __init__.py
-     |- __init__.py
+    |- readers/
+      |- __init__.py
+      |- conll_reader.py
+    |- __init__.py
   |- data/ ...
 ```
 
@@ -186,38 +188,115 @@ This might seem a bit arcane now, but stick with it and you'll see what I mean.
 
 Every class that inherits from `DatasetReader` *should override these 3 functions**:
 
-1. `__init__(self, ...)`
-2. `_read(self, file_path: str)`
-3. `text_to_instance(self, ...)`
+1. `__init__(self, ...) -> None`
+2. `_read(self, file_path: str) -> List[Instance]`
+3. `text_to_instance(self, ...) -> Instance`
 
 Any argument in `__init__()` will be visible to the JSON configuration later on, so if you have parameters in the dataset reader you want to change in between experiments, you'll put them there.
+For our CoNLL'03 reader, our `__init__()` function will take in 2 parameters: `token_indexers`, and `lazy`.
 
 ```
-    def __init__():
-        pass
+from typing import Dict
+
+...
+
+    def __init__(self,
+                 token_indexers: Dict[str, TokenIndexer] = None,
+                 lazy: bool = False) -> None:
+        super().__init__(lazy)
+        self._token_indexers = token_indexers or {'tokens': SingleIdTokenIndexer()}
 ```
+
+The token indexers will tell Allen
 
 ```
     @overrides
-    def _read():
-        pass
+    def _read(self, file_path: str):
+        is_divider = lambda line: line.strip() == ''
+        with open(file_path, 'r') as conll_file:
+            for divider, lines in itertools.groupby(conll_file, is_divider):
+                if not divider:
+                    fields = [l.strip().split() for l in lines]
+                    # switch it so that each field is a list of tokens/labels
+                    fields = [l for l in zip(*fields)]
+                    # only keep the tokens and NER labels
+                    tokens, _, _, ner_tags = fields
+
+                    yield self.text_to_instance(tokens, ner_tags)
 ```
 
+itertools.groupby is a powerful function that can group successive items in a list by the returned function call.
+In this case, we're calling it with `is_divider`, which returns True if it's a blank line and False otherwise.
+
 ```
-    def text_to_instance():
-        pass
+    @overrides
+    def text_to_instance(self,
+                         words: List[str],
+                         ner_tags: List[str]) -> Instance:
+        fields: Dict[str, Field] = {}
+        # wrap each token in the file with a token object
+        tokens = TextField([Token(w) for w in words], self._token_indexers)
+
+        # Instances in AllenNLP are created using Python dictionaries,
+        # which map the token key to the Field type
+        fields["tokens"] = tokens
+        fields["label"] = SequenceLabelField(ner_tags, tokens)
+
+        return Instance(fields)
 ```
 
 ## 1.4 Testing the Dataset Reader
 
+Now that we've written a dataset reader, we want to test that it can successfully load the CoNLL dataset, and perhaps see some corpus statistics.
+Conveniently, AllenNLP has a built-in command for that: `allennlp dry-run`.
+However, before we can use the command, we have to create a configuration file which uses our reader.
+
 ### 1.4.1 A First Taste of Configuration
 
+I personally like to keep all my configuration files in a separate folder outside of the main package folder.
+Thus, I tend to create a `configs` folder and keep each configuration file I create in there:
+
 ```
-{}
+mkdir configs
+touch configs/test_reader.jsonnet
 ```
+
+After running the above commands, your `allennlp_tutorial` folder should look like the following:
+
+```
+|- configs
+  |- test_reader.jsonnet
+|- tagging/ ...
+|- data/ ...
+```
+
+Inside this file, put the following Jsonnet code (it looks a lot like JSON, and all valid JSON is valid Jsonnet, so don't worry about the differences for now):
+
+```
+{
+  dataset_reader: {
+    type: 'conll_03_reader',
+    lazy: false
+  },
+  train_data_path: 'data/train.txt',
+  validation_data_path: 'data/validation.txt'
+}
+
+```
+
+This is the configuration file that we need to load our data.
+It's effectively a dict with 3 keys (for now): `dataset_reader`, `train_data_path`, and `validation_data_path`.
+The `dataset_reader` has a `type`, which we use our **human-readable name defined before** for.
+
 
 ### 1.4.2 Using AllenNLP as a Command Line Tool
 
+With that configuration
+
 ```
-allennlp dry-run --include-package tagging -s /tmp/tagging configs/test_reader.jsonnet
+allennlp dry-run --include-package tagging -s /tmp/tagging/tests/0 configs/test_reader.jsonnet
 ```
+
+- **`configs/test_reader.jsonnet`**
+- **`--include-package`**
+- **`-s`**:
