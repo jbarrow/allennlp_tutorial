@@ -113,6 +113,7 @@ To use it, create a directory called `data` and copy the contents of the `downlo
 ```
 mkdir data
 cd data
+curl -o download.sh https://raw.githubusercontent.com/jbarrow/allennlp_tutorial/master/data/download.sh
 ```
 
 Then, just run the script:
