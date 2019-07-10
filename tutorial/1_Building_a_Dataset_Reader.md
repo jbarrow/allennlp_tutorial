@@ -90,7 +90,18 @@ Headingley NNP I-NP I-LOC
 Immediately, we notice two things:
 
 1. **There are 4 columns** - we only care about the first and last columns in this dataset, which contain the tokens and the NER tags.
-2. **There are no B-* tags** - this makes the problem a bit easier, as we don't need to predict entity start boundaries.
+2. **There are no B- tags** - that's only because of the example we chose, and the prior description of the task.
+  In fact, in the CoNLL dataset, B- tags only exist if two entities of the same type occur without a break, like:
+
+    ```
+    [Laguardia I-LOC] [New B-LOC] [York I-LOC]
+    ```
+
+    As opposed to:
+
+    ```
+    [Laguardia I-LOC] [in O] [New I-LOC] [York I-LOC]
+    ```
 
 In any case, the task should seem doable by humans (assuming you can get over reading everything in columnar form).
 
