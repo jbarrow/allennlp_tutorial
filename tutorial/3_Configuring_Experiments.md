@@ -2,6 +2,23 @@
 
 Now it's time to put everything together and actually train our model.
 
+## 3.1 Iterators
+
+```
+  iterator: {
+    type: 'basic',
+    batch_size: 10
+  },
+```
+
+```
+  iterator: {
+    type: 'bucket',
+    sorting_keys: [['tokens', 'num_tokens']],
+    batch_size: 10
+  },
+```
+
 ## 3.1 Model Configuration
 
 ```
@@ -29,6 +46,30 @@ Now it's time to put everything together and actually train our model.
       bidirectional: true
     }
   },
+```
+
+```
+  dataset_reader: {
+    type: 'conll_03_reader',
+    lazy: false,
+    token_indexers: {
+      words: {
+        type: 'single_id'
+      }
+    }
+  },
+  ...
+  model: {
+    embedder: {
+      words: {
+        type: 'embedding',
+        pretrained_file: "(http://nlp.stanford.edu/data/glove.6B.zip)#glove.6B.50d.txt",
+        embedding_dim: 300,
+        trainable: false
+      }
+    },
+    ...
+  }
 ```
 
 ## 3.2 Trainers

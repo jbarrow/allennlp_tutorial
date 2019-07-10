@@ -1,7 +1,4 @@
 {
-  random_seed: 1,
-  pytorch_seed: 11,
-  numpy_seed: 111,
   dataset_reader: {
     type: 'conll_03_reader',
     lazy: false,
