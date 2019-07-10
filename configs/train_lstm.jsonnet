@@ -8,7 +8,7 @@
   },
   iterator: {
     type: 'bucket',
-    sorting_keys: [['tokens', 'list_num_tokens']],
+    sorting_keys: [['tokens', 'num_tokens']],
     batch_size: 10
   },
   train_data_path: 'data/train.txt',
@@ -19,21 +19,14 @@
       tokens: {
         type: 'embedding',
         pretrained_file: "(http://nlp.stanford.edu/data/glove.6B.zip)#glove.6B.50d.txt",
-        embedding_dim: 300,
+        embedding_dim: 50,
         trainable: false
       }
     },
-    classifier: {
-      input_dim: 100,
-      num_layers: 1,
-      hidden_dims: [4],
-      activations: ['softmax'],
-      dropout: [0.0]
-    },
     encoder: {
       type: 'lstm',
-      input_size: 300,
-      hidden_size: 100,
+      input_size: 50,
+      hidden_size: 25,
       bidirectional: true
     }
   },

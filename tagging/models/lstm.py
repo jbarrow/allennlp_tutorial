@@ -7,31 +7,32 @@ from allennlp.data.vocabulary import Vocabulary
 from allennlp.modules.feedforward import FeedForward
 from allennlp.modules.time_distributed import TimeDistributed
 from allennlp.modules.text_field_embedders import TextFieldEmbedder
-from allennlp.nn.util import get_text_field_mask
+from allennlp.nn.util import get_text_field_mask, sequence_cross_entropy_with_logits
 from allennlp.modules.seq2seq_encoders.seq2seq_encoder import Seq2SeqEncoder
+from allennlp.training.metrics import F1Measure, CategoricalAccuracy
 
 from typing import Optional, Dict, Any
-
+from statistics import mean
 
 @Model.register('ner_lstm')
 class NerLstm(Model):
     def __init__(self,
                  vocab: Vocabulary,
                  embedder: TextFieldEmbedder,
-                 classifier: FeedForward,
                  encoder: Seq2SeqEncoder) -> None:
         super().__init__(vocab)
 
         self._embedder = embedder
         self._encoder = encoder
-        self._classifier = classifier
-        self._classifier_time_distributed = TimeDistributed(self._classifier)
+        self._classifier = torch.nn.Linear(in_features=encoder.get_output_dim(),
+                                           out_features=vocab.get_vocab_size('labels'))
 
-        self._loss = nn.CrossEntropyLoss()
+        self._accuracy = CategoricalAccuracy()
 
     def get_metrics(self, reset: bool = True) -> Dict[str, float]:
-        #return { 'f1': self._f1.get_metric(reset) }
-        return {}
+        return {
+            'accuracy': self._accuracy.get_metric(reset)
+        }
 
     def forward(self,
                 tokens: Dict[str, torch.Tensor],
@@ -40,7 +41,11 @@ class NerLstm(Model):
 
         embedded = self._embedder(tokens)
         encoded = self._encoder(embedded, mask)
-        classified = self._classifier_time_distributed(encoded)
+        classified = self._classifier(encoded)
+
+        self._accuracy(classified, label, mask)
 
         output: Dict[str, torch.Tensor] = {}
-        output["loss"] = self._loss(classified, label)
+        output["loss"] = sequence_cross_entropy_with_logits(classified, label, mask)
+
+        return output
