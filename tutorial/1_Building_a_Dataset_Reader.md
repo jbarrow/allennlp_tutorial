@@ -356,17 +356,30 @@ This is the configuration file that we need to load our data.
 It's effectively a dict with 3 keys (for now): `dataset_reader`, `train_data_path`, and `validation_data_path`.
 The `dataset_reader` has a `type`, which we use our **human-readable name defined before** for.
 
+Note that we can also pass in any arguments to the `__init__` function we had defined before.
+In this case, we just want to ensure that `lazy=False`, so we write that in the `dataset_reader` key.
 
 ### 1.4.2 Using AllenNLP as a Command Line Tool
 
-With that configuration
+With that configuration, we can test the dataset reader using the following command:
 
 ```
 allennlp dry-run --include-package tagging -s /tmp/tagging/tests/0 configs/test_reader.jsonnet
 ```
 
-- **`configs/test_reader.jsonnet`**
-- **`--include-package`**
-- **`-s`**:
+A breakdown of the above command:
+
+- **`configs/test_reader.jsonnet`** - this is the location of the JSON configuration file
+- **`--include-package tagging`** - we want AllenNLP to be able to find all the code we've written and to be able to access everything we've registered.
+  In order to do that, we have to pass `--include-package` the folder with our code in it.
+- **`-s`** - this is the directory that AllenNLP will **serialize** (or store) all the outputs for each experimental run.
+  Since we're not doing any serious experiments just yet, we can just pass it some junk folder in `/tmp`.
+  Note that **every time you call `allennlp dry-run`, you need to pass it a non-existent folder**.
+
+With that, you should be able to load the dataset and see some corpus statistics!
+Don't worry about that pesky error at the end, we'll take care of that in the next 2 sections!
 
 ## 1.5 A General Note on Documentation
+
+Finally, I'd like to end what has ended up being a *very* long section with a note about how to use the [AllenNLP documentation](https://allenai.github.io/allennlp-docs/).
+The documentation is the best resource to find help, or to see if something has already been implemented within AllenNLP.
