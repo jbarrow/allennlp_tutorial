@@ -1,3 +1,10 @@
+# 6. CRF Decoding
+
+TODO: Write the tutorial.
+
+The code for the CRF-decoded LSTM is below:
+
+```
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -67,3 +74,5 @@ class NerLstmCRF(Model):
         output["loss"] = -log_likelihood
 
         return output
+
+```
