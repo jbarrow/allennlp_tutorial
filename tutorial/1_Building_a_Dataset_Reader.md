@@ -19,24 +19,41 @@ I'll borrow the example from the previous section:
 Bill Gates and Paul Allen, founders of Microsoft, started selling software in 1975 in New Mexico.
 ```
 
-There are questions you may want to ask in order to understand the sentence:
+If we were to get all the entities in this sentence, we would want something like the following:
 
-- **who** was mentioned in the sentence? (Answer: `Bill Gates` and `Paul Allen`)
-- **what organizations** were mentioned? (Answer: `Microsoft`)
-- **what locations** were mentioned? (Answer: `New Mexico`)
-- **what dates** were mentioned? (Answer: `1975`)
+```
+[Bill Gates PER] and [Paul Allen PER], founders of [Microsoft ORG], started selling software in [1975 DATE] in [New Mexico LOC].
+```
 
-In order to to this, we can think of the problem in a few different ways:
+In order to to this, we can think of the problem in two different ways:
 
-1. sentence segmentation, where we group types of words
+1. First, as a segmentation task, where we attempt to find and classify segments that match entities, and assign some NULL or O label to the in-between stuff. Thus, our label space would be `{PER, ORG, DATE, LOC, O}`.
+2. Second, as a token-level tagging task.
+  This one requires a bit more thought --- it's not clear from the start how we associate entities with each other.
+  But if you introduce a slightly modified label space, you can reconstruct the entities.
 
-### 1.1.2
+To do this, each entity type (e.g. `PER`, `LOC`) gets split into two labels: `B-PER`, denoting "this is a new person entity" and `I-PER`, denoting, "I'm continuing the previous person entity".
+On the above sentence, every token would be tagged like so:
+
+```
+[Bill B-PER] [Gates I-PER] and [Paul B-PER] [Allen I-PER], founders of [Microsoft B-ORG], started selling software in [1975 B-DATE] in [New B-LOC] [Mexico I-LOC].
+```
+
+For brevity's sake, I left out all the `[and O]` tags, but you can imagine that all the rest of the words in the sentence are assigned that null tag.
+
+It turns out that this second one is easier for gradient-based methods like deep learning.
+When facing a new problem in NLP, this is traditionally the step where you **think about how to best approach the problem**.
+In this case, though, somebody has already thought about both how to approach and evaluate the problem.
 
 ## 1.2 Data
 
-
+Thus, the next step is reading the data.
+To train these methods, we'll need a labeled dataset.
+It turns out that there is one, the [CoNLL'03](https://www.clips.uantwerpen.be/conll2003/ner/) dataset, which has labels for named entity recognition, part of speech tagging, and phrase chunking.
 
 ### 1.2.1 CoNLL'03
+
+Let
 
 ### 1.2.2 Downloading
 
