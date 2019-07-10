@@ -16,7 +16,7 @@ from typing import Optional, Dict, Any, List
 
 
 @Model.register('ner_character_lstm_crf')
-class NerLstmCRF(Model):
+class NerCharacterLstmCRF(Model):
     def __init__(self,
                  vocab: Vocabulary,
                  word_embedder: TextFieldEmbedder,
