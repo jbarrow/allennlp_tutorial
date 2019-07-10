@@ -2,7 +2,6 @@
 
 The first step of any NLP project should be reading the data.
 Until you have (a) verified that the task is doable and (b) converted the data into a model-readable format, you cannot begin running experiments.
-Thus, whenever you sit down to work on a new NLP task,
 
 ## 1.1 Named-Entity Recognition
 
@@ -53,7 +52,47 @@ It turns out that there is one, the [CoNLL'03](https://www.clips.uantwerpen.be/c
 
 ### 1.2.1 CoNLL'03
 
-Let
+Let's take a look at an example from the CoNLL'03 dataset and see if they conform to the specification we laid down above:
+
+```
+Essex NNP I-NP I-ORG
+, , O O
+however RB I-ADVP O
+, , O O
+look VB I-VP O
+certain JJ I-ADJP O
+to TO I-VP O
+regain VB I-VP O
+their PRP$ I-NP O
+top JJ I-NP O
+spot NN I-NP O
+after IN I-PP O
+Nasser NNP I-NP I-PER
+Hussain NNP I-NP I-PER
+and CC I-NP O
+Peter NNP I-NP I-PER
+Such JJ I-NP I-PER
+gave VBD I-VP O
+them PRP I-NP O
+a DT B-NP O
+firm NN I-NP O
+grip NN I-NP O
+on IN I-PP O
+their PRP$ I-NP O
+match NN I-NP O
+against IN I-PP O
+Yorkshire NNP I-NP I-ORG
+at IN I-PP O
+Headingley NNP I-NP I-LOC
+. . O O
+```
+
+Immediately, we notice two things:
+
+1. **There are 4 columns** - we only care about the first and last columns in this dataset, which contain the tokens and the NER tags.
+2. **There are no B-* tags** - this makes the problem a bit easier, as we don't need to predict entity start boundaries.
+
+In any case, the task should seem doable by humans (assuming you can get over reading everything in columnar form).
 
 ### 1.2.2 Downloading
 
@@ -75,6 +114,52 @@ It should generate 3 files: `train.txt`, `validation.txt`, and `test.txt`.
 
 ## 1.3 Dataset Reader
 
+Now we get to actually use AllenNLP for the first time.
+The first thing we're going to do is build a dataset reader, which can consume the CoNLL'03 dataset.
+
+To get started, let's create the directory structure for this project.
+Currently, you should have directories that look something like this:
+
+```
+allennlp_tutorial/
+  |- tagging/
+  |- data/
+     |- download.sh
+     |- train.txt
+     |- test.txt
+     |- validation.txt
+```
+
+In this case, `tagging` is the name of the Python package we'll be creating.
+We'll start by creating a folder to hold our dataset readers by running the following commands:
+
+```
+mkdir tagging/readers
+touch tagging/__init__.py
+touch tagging/readers/__init__.py
+```
+
+These commands do 2 things:
+
+1. They create the folder to hold our dataset readers.
+2. They create the `__init__.py` files that allow `tagging` and its subfolders to be proper parts of a Python package.
+
+So now your directories should look something like this:
+
+```
+allennlp_tutorial/
+  |- tagging/
+     |- readers/
+        |- __init__.py
+     |- __init__.py
+  |- data/ ...
+```
+
+### 1.3.1 AllenNLP `DatasetReader`s
+
+To do this, we're going to extend AllenNLP's built-in `DatasetReader` class.
+We'll put the following code in a file in the readers_folder called `conll_reader.py`:
+
 ```
 from allennlp.data.dataset_readers.dataset_reader import DatasetReader
 
@@ -82,6 +167,30 @@ from allennlp.data.dataset_readers.dataset_reader import DatasetReader
 class CoNLL03DatasetReader(DatasetReader):
     pass
 ```
+
+This code creates a new reader that subclasses from AllenNLP's `DatasetReader`.
+One thing you may notice is that **decorator** just before the line that declares the class, `@DatasetReader.register(...)`.
+This is our first run-in with a core feature of AllenNLP, `Registrable`s.
+
+**A Tangent: Registrables**
+
+This is just a brief tangent to explain the idea of AllenNLP's `Registrable`s.
+Nearly every class type in AllenNLP inherits from a base class called `Registrable`, which has a `.register()` function defined on it.
+When you call `.register()` with a **human-readable name**, it links that name to the class that it decorates.
+This is one bit of magic that allows us to confgure our experiments with JSON even though we write all the code in Python.
+
+When you write a new `Model`, a new `DatasetReader`, a new `Metric`, or pretty much anything else, you'll want to register it so it's visible to your configuration file.
+This might seem a bit arcane now, but stick with it and you'll see what I mean.
+
+**Back to the Code**
+
+Every class that inherits from `DatasetReader` *should override these 3 functions**:
+
+1. `__init__(self, ...)`
+2. `_read(self, file_path: str)`
+3. `text_to_instance(self, ...)`
+
+Any argument in `__init__()` will be visible to the JSON configuration later on, so if you have parameters in the dataset reader you want to change in between experiments, you'll put them there.
 
 ```
     def __init__():
