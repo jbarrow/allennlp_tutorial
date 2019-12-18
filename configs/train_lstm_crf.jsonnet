@@ -1,6 +1,13 @@
 {
   dataset_reader: {
     type: 'conll_03_reader',
+    token_indexers: {
+      tokens: {
+        type: 'single_id',
+        namespace: 'tokens',
+        lowercase_tokens: true
+      }
+    },
     lazy: false
   },
   iterator: {

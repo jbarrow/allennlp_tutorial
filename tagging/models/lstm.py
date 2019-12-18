@@ -25,7 +25,7 @@ class NerLstm(Model):
         self._classifier = torch.nn.Linear(in_features=encoder.get_output_dim(),
                                            out_features=vocab.get_vocab_size('labels'))
 
-        self._f1 = SpanBasedF1Measure(vocab, 'labels')
+        self._f1 = SpanBasedF1Measure(vocab, 'labels', 'IOB1')
 
     def get_metrics(self, reset: bool = True) -> Dict[str, float]:
         return self._f1.get_metric(reset)
