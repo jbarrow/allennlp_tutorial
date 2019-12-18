@@ -40,9 +40,10 @@ class NerLstm(Model):
         classified = self._classifier(encoded)
 
         output: Dict[str, torch.Tensor] = {}
+        output['logits'] = classified
 
         if label is not None:
             self._f1(classified, label, mask)
-            output["loss"] = sequence_cross_entropy_with_logits(classified, label, mask)
+            output['loss'] = sequence_cross_entropy_with_logits(classified, label, mask)
 
         return output
