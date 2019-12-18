@@ -6,12 +6,14 @@ In this section we'll learn about how to build a `Predictor`, a bit of AllenNLP 
 
 Predictors have three primary functions in AllenNLP:
 
-  1. Generating model predictions so we can explore them
-  2. Applying pretrained models to a new dataset
-  3. Deploying a pretrained model in production
+  1. **Generating model predictions** so we can explore them
+  2. **Applying pretrained models** to a new dataset
+  3. **Deploying** a pretrained model in production
 
 We're going to look at the first two of these, but if you're interested in using AllenNLP to serve models in production, you should definitely take a look at [`allennlp serve`](https://allenai.github.io/allennlp-docs/api/allennlp.commands.serve.html).
 
+It works by taking in a dataset (with or without labels) and running the model on each instance.
+With the model, it allows you t
 
 Typically, a `Predictor` is used to do **json-to-json transformation**.
 That is, if you have your data in the [json lines format](http://jsonlines.org/), it allows you to pre
