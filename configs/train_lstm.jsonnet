@@ -6,7 +6,7 @@
   iterator: {
     type: 'bucket',
     sorting_keys: [['tokens', 'num_tokens']],
-    batch_size: 10
+    batch_size: 128
   },
   train_data_path: 'data/train.txt',
   validation_data_path: 'data/validation.txt',

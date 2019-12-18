@@ -21,7 +21,7 @@
   train_data_path: 'data/train.txt',
   validation_data_path: 'data/validation.txt',
   model: {
-    type: 'ner_character_lstm_crf',
+    type: 'hierarchical_lstm',
     word_embedder: {
       tokens: {
         type: 'embedding',
