@@ -378,6 +378,13 @@ A breakdown of the above command:
   Note that **every time you call `allennlp dry-run`, you need to pass it a non-existent folder**.
 
 With that, you should be able to load the dataset and see some corpus statistics!
+Once it runs, you'll see the corpus statistics, but you'll also see the following error:
+
+```
+allennlp.common.checks.ConfigurationError: 'key "model" is required at location ""'
+```
+
+This is because we haven't built our first model yet.
 Don't worry about that pesky error at the end, we'll take care of that in the next 2 sections!
 
 ## 1.5 A General Note on Documentation
