@@ -156,7 +156,7 @@ class NerLstmCRF(Model):
         broadcasted = self._broadcast_tags(viterbi_tags, classified)
 
         log_likelihood = self._crf(classified, label, mask)
-        self._accuracy(broadcasted, label, mask)
+        self._f1(broadcasted, label, mask)
 
         output: Dict[str, torch.Tensor] = {}
         output["loss"] = -log_likelihood
