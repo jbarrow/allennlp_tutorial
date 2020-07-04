@@ -10,21 +10,22 @@
     },
     lazy: false
   },
-  iterator: {
-    type: 'bucket',
-    sorting_keys: [['tokens', 'num_tokens']],
-    batch_size: 128
+  data_loader: {
+    batch_size: 128,
+    shuffle: true
   },
   train_data_path: 'data/train.txt',
   validation_data_path: 'data/validation.txt',
   model: {
     type: 'ner_lstm',
     embedder: {
-      tokens: {
+      token_embedders: {
+        tokens: {
         type: 'embedding',
-        pretrained_file: "(http://nlp.stanford.edu/data/glove.6B.zip)#glove.6B.50d.txt",
-        embedding_dim: 50,
-        trainable: false
+          pretrained_file: "(http://nlp.stanford.edu/data/glove.6B.zip)#glove.6B.50d.txt",
+          embedding_dim: 50,
+          trainable: false
+        }
       }
     },
     encoder: {
@@ -37,7 +38,7 @@
   trainer: {
     num_epochs: 40,
     patience: 10,
-    cuda_device: -1,
+    cuda_device: 0,
     grad_clipping: 5.0,
     validation_metric: '-loss',
     optimizer: {
