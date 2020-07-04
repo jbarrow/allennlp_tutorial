@@ -241,7 +241,6 @@ import itertools
 
 ...
 
-    @overrides
     def _read(self, file_path: str) -> Iterator[Instance]:
         is_divider = lambda line: line.strip() == ''
         with open(file_path, 'r') as conll_file:
@@ -279,7 +278,6 @@ from allennlp.data.fields import Field, TextField, SequenceLabelField
 
 ...
 
-    @overrides
     def text_to_instance(self,
                          words: List[str],
                          ner_tags: List[str]) -> Instance:
@@ -365,7 +363,7 @@ In this case, we just want to ensure that `lazy=False`, so we write that in the 
 With that configuration, we can test the dataset reader using the following command:
 
 ```
-allennlp dry-run --include-package tagging -s /tmp/tagging/tests/0 configs/test_reader.jsonnet
+allennlp train --include-package tagging -s /tmp/tagging/tests/0 configs/test_reader.jsonnet
 ```
 
 A breakdown of the above command:
