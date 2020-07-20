@@ -1,5 +1,7 @@
 # AllenNLP Tutorial
 
+**New: July 20, 2020**: The tutorial now uses **AllenNLP 1.0**, and so should be up-to-date with the latest AllenNLP.
+
 This tutorial is meant to teach you both how to use AllenNLP and a principled approach to doing deep learning research in NLP.
 The content is mirrored (**and updated**) on my personal site: [jbarrow.ai](https://jbarrow.ai/#allennlp).
 If you're interested in reading the latest version, you can find it there.
