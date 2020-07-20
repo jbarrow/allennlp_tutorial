@@ -25,7 +25,7 @@ That's why I advocate for building the baselines first.
 
 In this case, read the data means two things.
 First, it means that once you're ready to begin tackling a problem in AllenNLP you should write the `DatasetReader` first.
-Once you've done this and tested it with the `allennlp dry-run` command, you are ready to start building models and experimenting.
+Once you've done this and tested it with the `allennlp train --dry-run` command, you are ready to start building models and experimenting.
 
 But second, it means that you should actually read the data and attempt to solve the task you're about to ask a model to solve.
 This is the most valuable advice I got from my undergraduate computer vision course: if you can't solve the problem, why should your model be able to?

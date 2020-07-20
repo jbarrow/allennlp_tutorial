@@ -16,5 +16,6 @@ It consists of 10 sections, and I recommend you do them in order:
 7. [Advanced Modeling: Hierarchical LSTMs, CRF Decoding, and BERT](https://github.com/jbarrow/allennlp_tutorial/blob/master/tutorial/7_Advanced_Modeling.md) [WIP]
 8. [Digging Into the Documentation](https://github.com/jbarrow/allennlp_tutorial/blob/master/tutorial/8_Documentation.md) [WIP]
 9. [Hyperparameter Search: AllenTune](https://github.com/jbarrow/allennlp_tutorial/blob/master/tutorial/9_AllenTune.md) [WIP]
+10. [Appendix: Migrating from AllenNLP 0.9 to 1.0](https://github.com/jbarrow/allennlp_tutorial/blob/master/tutorial/A1_Migrating_to_1_0.md) [WIP]
 
 The tutorial makes no assumptions about familiarity with AllenNLP, and goes through using it as an experimental platform, using JSON configurations.

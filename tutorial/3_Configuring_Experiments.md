@@ -14,13 +14,13 @@ cp configs/test_reader.jsonnet configs/train_lstm.jsonnet
 
 This will give us our old configuration file to start out with.
 
-To be able to train a model, we're going to need to introduce 3 configuration keys:
+To be able to train a model, we're going to need to fill in the 3 empty configuration keys from Section 1:
 
-1. `iterator`
+1. `data_loader`
 2. `model`
 3. `trainer`
 
-The `iterator` describes how to batch the data and iterate over it.
+The `data_loader` describes how to batch the data and iterate over it.
 AllenNLP has a number of built-in iterators that we'll be using, though for more advanced projects you might be inclined to write your own.
 
 The `model` configures each of those sub-modules that we defined in the last section.
@@ -40,13 +40,15 @@ The basic iterator batches it into a fixed batch size, and then (by default) shu
 You can use it in the configuration file by adding this bit of code:
 
 ```
-  iterator: {
-    type: 'basic',
-    batch_size: 10
+  data_loader: {
+    batch_size: 10,
+    shuffle: true
   },
 ```
 
-The bucket iterator is slightly more advanced. It's used to minimize the memory foot-print of all the batches.
+AllenNLP also offers `batch_sampler`s, which allow you to specify **how to construct batches**.
+For instance, you can use a **bucket sampling strategy**, which is slightly more advanced.
+It's used to minimize the memory foot-print of all the batches.
 When batching a variable length sequence, AllenNLP will pad all the sequences to the length of the longest sequence in the batch.
 If you randomly sample from the data, you could end up with some long sequences and some short sequences in the same batch, leading to a lot of extra memory used for padding.
 For example, that might look something like this:
@@ -59,13 +61,13 @@ For example, that might look something like this:
 Where one sequence is padded to double its length.
 Using a bucket iterator sorts all the examples by length and **then** batches them.
 This minimizes the amount of padding in each batch, as the sequences are only batched with other similar-length sequences.
-To use the bucket iterator, you need to additionally specify which keys to sort on, in this case the `num_tokens` in the `tokens` field.
 
 ```
-  iterator: {
-    type: 'bucket',
-    sorting_keys: [['tokens', 'num_tokens']],
-    batch_size: 10
+  data_loader: {
+    batch_sampler: {
+      type: 'bucket',
+      batch_size: 10
+    }
   },
 ```
 
@@ -101,7 +103,9 @@ In our case, we're still using the default `tokens` namespace for our `token_ind
   model: {
     type: 'ner_lstm',
     embedder: {
-      tokens: {}
+      token_embedders: {
+        tokens: {}
+      }
     },
     encoder: {}
   }
@@ -122,7 +126,9 @@ To see where we get the `tokens` namespace from, imagine that we instead told ou
   ...
   model: {
     embedder: {
-      words: {}
+      token_embedders: {
+        words: {}
+      }
     },
     ...
   }
@@ -137,11 +143,13 @@ This is where we could do something fancier with BERT or eLMO, but I'll leave th
   model: {
     type: 'ner_lstm',
     embedder: {
-      tokens: {
+      token_embedders: {
+        tokens: {
         type: 'embedding',
-        pretrained_file: "(http://nlp.stanford.edu/data/glove.6B.zip)#glove.6B.50d.txt",
-        embedding_dim: 50,
-        trainable: false
+          pretrained_file: "(http://nlp.stanford.edu/data/glove.6B.zip)#glove.6B.50d.txt",
+          embedding_dim: 50,
+          trainable: false
+        }
       }
     },
     encoder: {
@@ -158,11 +166,13 @@ For this run, we'll use a Bidirectional LSTM:
   model: {
     type: 'ner_lstm',
     embedder: {
-      tokens: {
+      token_embedders: {
+        tokens: {
         type: 'embedding',
-        pretrained_file: "(http://nlp.stanford.edu/data/glove.6B.zip)#glove.6B.50d.txt",
-        embedding_dim: 50,
-        trainable: false
+          pretrained_file: "(http://nlp.stanford.edu/data/glove.6B.zip)#glove.6B.50d.txt",
+          embedding_dim: 50,
+          trainable: false
+        }
       }
     },
     encoder: {

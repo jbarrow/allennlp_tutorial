@@ -11,8 +11,10 @@
     lazy: false
   },
   data_loader: {
-    batch_size: 128,
-    shuffle: true
+    batch_sampler: {
+      type: 'bucket',
+      batch_size: 10
+    }
   },
   train_data_path: 'data/train.txt',
   validation_data_path: 'data/validation.txt',

@@ -315,7 +315,7 @@ The next step is to test that we've done everything correctly.
 ## 1.4 Testing the Dataset Reader
 
 Now that we've written a dataset reader, we want to test that it can successfully load the CoNLL dataset, and perhaps see some corpus statistics.
-Conveniently, AllenNLP has a built-in command for that: `allennlp dry-run`.
+Conveniently, AllenNLP 1.0 has a built-in command for that: `allennlp train --dry-run`.
 However, before we can use the command, we have to create a configuration file which uses our reader.
 
 ### 1.4.1 A First Taste of Configuration
@@ -346,7 +346,10 @@ Inside this file, put the following Jsonnet code (it looks a lot like JSON, and 
     lazy: false
   },
   train_data_path: 'data/train.txt',
-  validation_data_path: 'data/validation.txt'
+  validation_data_path: 'data/validation.txt',
+  model: {},
+  data_loader: {},
+  trainer: {}
 }
 
 ```
@@ -354,6 +357,7 @@ Inside this file, put the following Jsonnet code (it looks a lot like JSON, and 
 This is the configuration file that we need to load our data.
 It's effectively a dict with 3 keys (for now): `dataset_reader`, `train_data_path`, and `validation_data_path`.
 The `dataset_reader` has a `type`, which we use our **human-readable name defined before** for.
+We have to add the `model`, `data_loader`, and `trainer` keys to pass some AllenNLP checks.
 
 Note that we can also pass in any arguments to the `__init__` function we had defined before.
 In this case, we just want to ensure that `lazy=False`, so we write that in the `dataset_reader` key.
@@ -363,7 +367,7 @@ In this case, we just want to ensure that `lazy=False`, so we write that in the 
 With that configuration, we can test the dataset reader using the following command:
 
 ```
-allennlp train --include-package tagging -s /tmp/tagging/tests/0 configs/test_reader.jsonnet
+allennlp train --dry-run --include-package tagging -s /tmp/tagging/tests/0 configs/test_reader.jsonnet
 ```
 
 A breakdown of the above command:
@@ -373,16 +377,50 @@ A breakdown of the above command:
   In order to do that, we have to pass `--include-package` the folder with our code in it.
 - **`-s`** - this is the directory that AllenNLP will **serialize** (or store) all the outputs for each experimental run.
   Since we're not doing any serious experiments just yet, we can just pass it some junk folder in `/tmp`.
-  Note that **every time you call `allennlp dry-run`, you need to pass it a non-existent folder**.
+  Note that **every time you call `allennlp train`, you need to pass it a non-existent folder**.
 
-With that, you should be able to load the dataset and see some corpus statistics!
-Once it runs, you'll see the corpus statistics, but you'll also see the following error:
+With that, you should be able to load the dataset and see that we can read the corpus!
+The first few lines of output should look something like this:
 
 ```
-allennlp.common.checks.ConfigurationError: 'key "model" is required at location ""'
+2020-07-20 10:13:37,453 - INFO - transformers.file_utils - PyTorch version 1.5.1 available.
+2020-07-20 10:13:38,166 - INFO - allennlp.common.params - random_seed = 13370
+2020-07-20 10:13:38,166 - INFO - allennlp.common.params - numpy_seed = 1337
+2020-07-20 10:13:38,166 - INFO - allennlp.common.params - pytorch_seed = 133
+2020-07-20 10:13:38,168 - INFO - allennlp.common.checks - Pytorch version: 1.5.1
+2020-07-20 10:13:38,168 - INFO - allennlp.common.params - type = default
+2020-07-20 10:13:38,169 - INFO - allennlp.common.params - dataset_reader.type = conll_03_reader
+2020-07-20 10:13:38,169 - INFO - allennlp.common.params - dataset_reader.token_indexers = None
+2020-07-20 10:13:38,169 - INFO - allennlp.common.params - dataset_reader.lazy = False
+2020-07-20 10:13:38,169 - INFO - allennlp.common.params - train_data_path = data/train.txt
+2020-07-20 10:13:38,170 - INFO - allennlp.common.params - vocabulary = None
+2020-07-20 10:13:38,170 - INFO - allennlp.common.params - datasets_for_vocab_creation = None
+2020-07-20 10:13:38,170 - INFO - allennlp.common.params - validation_dataset_reader = None
+2020-07-20 10:13:38,170 - INFO - allennlp.common.params - validation_data_path = data/validation.txt
+2020-07-20 10:13:38,170 - INFO - allennlp.common.params - validation_data_loader = None
+2020-07-20 10:13:38,170 - INFO - allennlp.common.params - test_data_path = None
+2020-07-20 10:13:38,170 - INFO - allennlp.common.params - evaluate_on_test = False
+2020-07-20 10:13:38,170 - INFO - allennlp.common.params - batch_weight_key =
+2020-07-20 10:13:38,170 - INFO - allennlp.training.util - Reading training data from data/train.txt
+14987it [00:00, 22478.60it/s]
+2020-07-20 10:13:38,837 - INFO - allennlp.training.util - Reading validation data from data/validation.txt
+3466it [00:00, 14461.19it/s]
+2020-07-20 10:13:39,077 - INFO - allennlp.data.vocabulary - Fitting token dictionary from dataset.
+18453it [00:00, 89928.28it/s]
 ```
 
-This is because we haven't built our first model yet.
+That's a good sign!
+That means that our reader is working and we can read in all the data in the train and validation sets.
+However,  you'll also see the following error:
+
+```
+Traceback (most recent call last):
+  File "allennlp/common/params.py", line 237, in pop
+    value = self.params.pop(key)
+KeyError: 'type'
+```
+
+This is because we haven't built our first model yet to include it.
 Don't worry about that pesky error at the end, we'll take care of that in the next 2 sections!
 
 ## 1.5 A General Note on Documentation
