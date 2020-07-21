@@ -1,0 +1,4 @@
+- [ ] discuss external variables in Jsonnet (Section 3)
+- [ ] show how to get pdb working with AllenNLP (Section 4)
+- [ ] show how to add loggers (Section 4)
+- [ ] add a link to the 0.9 version in the README.
