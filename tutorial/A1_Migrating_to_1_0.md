@@ -7,7 +7,7 @@ This will ensure that anybody running your experiments will have the right versi
 
 However, if you would like to update your experiments to run to the latest version, then this guide is for you.
 In it I will cover the most common set of changes that you're likely to have to make to get your experiments running.
-I'll show before and after configuration snippets and code.
+It is presented as sets of minimal pairs; I'll show both before and after configuration snippets and code.
 Of course, if I missed something, feel free to submit a pull request at https://github.com/jbarrow/allennlp_tutorial or email me at jdbarrow [at] umd [dot] edu.
 
 ## Configuration
@@ -58,33 +58,40 @@ To see this, we can look at how to use a `BucketIterator`.
 #### Bucket Iterators and `batch_sampler`
 
 In v0.9, a `BucketIterator` was configured very similarly to a `BasicIterator`.
-Each of them was just a different iterator type, with different parameters (for a `BucketIterator` one also had to pass the `sorting_keys`):
+Each of them was just a different iterator type, with different parameters (for a `BucketIterator` one also had to pass the `sorting_keys`).
+However, in v1.0, you need to define a **batch sampling strategy**.
+An example of how to define a bucket iterator/data loader in both versions is:
 
-```
-  ...
+<table>
+  <tr>
+    <th>v0.9</th>
+    <th>v1.0</th>
+  </tr>
+  <tr>
+    <td>
+      <pre lang="jsonnet">  ...
   iterator: {
     type: 'bucket',
     sorting_keys: [['tokens', 'num_tokens']],
     batch_size: 128,
     shuffle: True
   },
-  ...
-```
-
-In v1.0, you instead choose a **batch sampling strategy**:
-
-```
-  ...
+  ...</pre>
+    </td>
+    <td>
+      <pre lang="jsonnet">  ...
   data_loader: {
     batch_sampler: {
       type: 'bucket',
       batch_size: 128
     }
   },
-  ...
-```
+  ...</pre>
+    </td>
+  </tr>
+</table>
 
-[EXPLAIN THE BATCH SAMPLER]
+[Explain the batch sampler]
 
 There are some additional changes:
 
@@ -97,17 +104,77 @@ There are some additional changes:
 
 Another major change from 0.9 to 1.0 is the `Trainer`.
 
-[CALLBACK TRAINER DEPRECATED]
+There are a few additional minor changes to the trainer, including:
+
+  1. Baked-in support for gradient accumulation.
+
+#### Callbacks
+
+For those of you that used the `CallbackTrainer` in v0.9, there is both bad news and good news.
+The bad news is that it has been deprecated in favor of the new `GradientDescentTrainer`.
+The good news is that callbacks are now an integrated part of the `GradientDescentTrainer`!
+
+[Explain how to use callbacks in the new trainer]
 
 ### `token_embedders`
 
+The way that namespaces work with embedders is now slightly different in v1.0.
+The `BasicTextFieldEmbedder` now takes a dictionary called `token_embedders` as a parameter.
+To get GloVe (or other word embeddings) working within the new version of AllenNLP requires wrapping your embedding namespaces in the `token_embedders` argument:
+
+<table>
+  <tr>
+    <th>v0.9</th>
+    <th>v1.0</th>
+  </tr>
+  <tr>
+    <td>
+      <pre lang="jsonnet">  ...
+  model: {
+    embedder: {
+      tokens: {
+        type: 'embedding',
+        pretrained_file: "(http://nlp.stanford.edu/data/glove.6B.zip)#glove.6B.50d.txt",
+        ...
+      }
+    },
+    ...
+  },
+  ...</pre>
+    </td>
+    <td>
+      <pre lang="jsonnet">  ...
+  model: {
+    embedder: {
+      token_embedders: {
+        tokens: {
+          type: 'embedding',
+          pretrained_file: "(http://nlp.stanford.edu/data/glove.6B.zip)#glove.6B.50d.txt",
+          ...
+        }
+      }
+    },
+    ...
+  },
+  ...</pre>
+    </td>
+  </tr>
+</table>
 
 ### `distributed`
 
 Finally, AllenNLP now takes a different approach to distributed GPU training.
+Previously, you could just specify a list of GPUs in the trainer.
+But now, configuration files take their own top-level key if you want to use distributed GPU training, the `distributed` key.
 
 ## Dataset Readers and Preprocessing
 
 ### Tokenizers
 
 ## Transformers (BERT/RoBERTa/BART/etc.)
+
+[Lots of cool stuff being done here! Discuss integration with huggingface and the different abstractions AllenNLP now has.]
+
+  - `PretrainedTransformerEmbedder`
+  - `PretrainedTransformerMismatchedEmbedder`
+  - `PretrainedTransformer` models and tokenizer
