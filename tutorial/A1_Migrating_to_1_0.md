@@ -134,7 +134,6 @@ To get GloVe (or other word embeddings) working within the new version of AllenN
     embedder: {
       tokens: {
         type: 'embedding',
-        pretrained_file: "(http://nlp.stanford.edu/data/glove.6B.zip)#glove.6B.50d.txt",
         ...
       }
     },
@@ -149,7 +148,6 @@ To get GloVe (or other word embeddings) working within the new version of AllenN
       token_embedders: {
         tokens: {
           type: 'embedding',
-          pretrained_file: "(http://nlp.stanford.edu/data/glove.6B.zip)#glove.6B.50d.txt",
           ...
         }
       }
