@@ -23,27 +23,33 @@ As a result, just understanding how the configuration files need to change will 
 ### `iterator` to `data_loader`
 
 The biggest change is dropping `iterator` and replacing it with `data_loader`.
-As an example, here's some 0.9 configuration for a basic `iterator`:
+As an example, here's how to set up a basic `iterator`/`data_loader` in both versions:
 
-```
-  ...
+<table>
+  <tr>
+    <th>v0.9</th>
+    <th>v1.0</th>
+  </tr>
+  <tr>
+    <td>
+      <pre lang="jsonnet">  ...
   iterator: {
     type: 'basic',
     batch_size: 128,
     shuffle: True
   },
-  ...
-```
-And in 1.0, the equivalent basic `data_loader` becomes:
-
-```
-  ...
+  ...</pre>
+    </td>
+    <td>
+      <pre lang="jsonnet">  ...
   data_loader: {
     batch_size: 128,
     shuffle: True
   },
-  ...
-```
+  ...</pre>
+    </td>
+  </tr>
+</table>
 
 If you only used `BasicIterator`s in the past, then this is a quick change.
 However, it is more than just a name shift, as the implementation/contents of the `data_loader` are more general and extensible than the previous iterator.
