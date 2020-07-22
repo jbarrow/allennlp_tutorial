@@ -176,3 +176,11 @@ But now, configuration files take their own top-level key if you want to use dis
   - `PretrainedTransformerEmbedder`
   - `PretrainedTransformerMismatchedEmbedder`
   - `PretrainedTransformer` models and tokenizer
+
+## Learning from Examples: `allennlp-models`
+
+It can be tremendously useful to find examples of model or experiment types that you're planning on running.
+Conveniently, with the version upgrade from `allennlp==0.9` to `allennlp==1.0`, AllenNLP moved models and example config files to [allennlp-models](https://github.com/allenai/allennlp-models).
+
+Many example config files can be found in the [`training_config` folder](https://github.com/allenai/allennlp-models/tree/master/training_config). Alternatively, you can also search for a particular config option in the github repository by limiting to the `.jsonnet` format.
+**Note** that the version of `allennlp` and `allennlp-models` are tied together. It is recommended that you should use the same version for both to avoid unexpected behavior.
