@@ -8,7 +8,7 @@ from allennlp.modules.text_field_embedders import TextFieldEmbedder
 from allennlp.nn.util import get_text_field_mask, sequence_cross_entropy_with_logits
 from allennlp.modules.seq2seq_encoders.seq2seq_encoder import Seq2SeqEncoder
 from allennlp.modules.seq2vec_encoders.seq2vec_encoder import Seq2VecEncoder
-from allennlp.training.metrics import CategoricalAccuracy
+from allennlp.training.metrics import CategoricalAccuracy, SpanBasedF1Measure
 
 from typing import Optional, Dict, Any, List
 
@@ -69,6 +69,9 @@ class HierarchicalLstm(Model):
         encoded = self._encoder(embedded, mask)
 
         classified = self._classifier(encoded)
+
+        output: Dict[str, torch.Tensor] = {}
+        output['logits'] = classified
 
         if label is not None:
             self._f1(classified, label, mask)
