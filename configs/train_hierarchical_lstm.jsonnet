@@ -13,28 +13,33 @@
       }
     }
   },
-  iterator: {
-    type: 'bucket',
-    sorting_keys: [['tokens', 'num_tokens']],
-    batch_size: 10
+  data_loader: {
+    batch_sampler: {
+      type: 'bucket',
+      batch_size: 10
+    }
   },
   train_data_path: 'data/train.txt',
   validation_data_path: 'data/validation.txt',
   model: {
     type: 'hierarchical_lstm',
     word_embedder: {
-      tokens: {
-        type: 'embedding',
-        pretrained_file: "(http://nlp.stanford.edu/data/glove.6B.zip)#glove.6B.50d.txt",
-        embedding_dim: 50,
-        trainable: false
+      token_embedders: {
+        tokens: {
+          type: 'embedding',
+          pretrained_file: "(http://nlp.stanford.edu/data/glove.6B.zip)#glove.6B.50d.txt",
+          embedding_dim: 50,
+          trainable: false
+        }
       }
     },
     character_embedder: {
-      characters: {
-        type: 'embedding',
-        embedding_dim: 10,
-        trainable: true
+      token_embedders: {
+        characters: {
+          type: 'embedding',
+          embedding_dim: 10,
+          trainable: true
+        }
       }
     },
     character_encoder: {
