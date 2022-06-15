@@ -116,7 +116,6 @@ To see where we get the `tokens` namespace from, imagine that we instead told ou
 ```
   dataset_reader: {
     type: 'conll_03_reader',
-    lazy: false,
     token_indexers: {
       words: {
         type: 'single_id'

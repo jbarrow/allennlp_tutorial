@@ -8,7 +8,6 @@
         lowercase_tokens: true
       }
     },
-    lazy: false
   },
   data_loader: {
     batch_sampler: {

@@ -217,14 +217,13 @@ from typing import Dict, List, Iterator
 
     def __init__(self,
                  token_indexers: Dict[str, TokenIndexer] = None,
-                 lazy: bool = False) -> None:
-        super().__init__(lazy)
+                 **kwargs,
+                 ) -> None:
+        super().__init__(**kwargs)
         self._token_indexers = token_indexers or {'tokens': SingleIdTokenIndexer()}
 ```
 
-The token indexers will help AllenNLP map tokens to integers to keep track of them in the future, and the `lazy` flag is required for anything that inherits from `DatasetReader`.
-If `lazy=True`, the AllenNLP won't store the dataset in memory, but will load it from disk in batch-size chunks.
-This is desirable if your dataset is too large to fit in memory, but for our purposes we'll stick with it being false.
+The token indexers will help AllenNLP map tokens to integers to keep track of them in the future, and the `kwargs` simply pass on any additional configured arguments to the parent `DatasetReader`.
 
 The next thing we need to define is the `_read()` function.
 The `_read()` function only takes in a `file_path: str` argument in pretty much every case.
@@ -279,8 +278,9 @@ from allennlp.data.fields import Field, TextField, SequenceLabelField
 ...
 
     def text_to_instance(self,
-                         words: List[str],
-                         ner_tags: List[str]) -> Instance:
+                         *inputs) -> Instance:
+        (words, ner_tags) = inputs
+
         fields: Dict[str, Field] = {}
         # wrap each token in the file with a token object
         tokens = TextField([Token(w) for w in words], self._token_indexers)
@@ -342,13 +342,14 @@ Inside this file, put the following Jsonnet code (it looks a lot like JSON, and 
 ```
 {
   dataset_reader: {
-    type: 'conll_03_reader',
-    lazy: false
+    type: 'conll_03_reader'
   },
   train_data_path: 'data/train.txt',
   validation_data_path: 'data/validation.txt',
   model: {},
-  data_loader: {},
+  data_loader: {
+    batch_size: 10
+  },
   trainer: {}
 }
 

@@ -16,8 +16,9 @@ def is_divider(line):
 class CoNLL03DatasetReader(DatasetReader):
     def __init__(self,
                  token_indexers: Dict[str, TokenIndexer] = None,
-                 lazy: bool = False) -> None:
-        super().__init__(lazy)
+                 **kwargs,
+                 ) -> None:
+        super().__init__(**kwargs)
         self._token_indexers = token_indexers or {'tokens': SingleIdTokenIndexer()}
 
     @overrides
@@ -41,8 +42,9 @@ class CoNLL03DatasetReader(DatasetReader):
 
     @overrides
     def text_to_instance(self,
-                         words: List[str],
-                         ner_tags: List[str]) -> Instance:
+                         *inputs) -> Instance:
+        (words, ner_tags) = inputs
+
         fields: Dict[str, Field] = {}
         # wrap each token in the file with a token object
         tokens = TextField([Token(w) for w in words], self._token_indexers)
