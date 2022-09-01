@@ -1,7 +1,6 @@
 {
   dataset_reader: {
     type: 'conll_03_reader',
-    lazy: false,
     token_indexers: {
       tokens: {
         type: 'single_id',
